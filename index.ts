@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
 
-type Options<T> = {
+type Options<T> = Partial<{
   serializer: Serializer<T>;
   parser: Parser<T>;
-};
+}>;
 
 type SetKey<T> = (key: string, value?: T) => void;
 
@@ -25,13 +25,12 @@ function useLocalStorage<T>(
   defaultValue?: T,
   options?: Options<T>
 ) {
-  const currentOptions: Options<T> = useMemo(() => {
-    return (
-      options || {
-        serializer: JSON.stringify,
-        parser: JSON.parse,
-      }
-    );
+  const currentOptions = useMemo(() => {
+    return {
+      serializer: JSON.stringify,
+      parser: JSON.parse,
+      ...options,
+    };
   }, [options]);
 
   const { serializer, parser } = currentOptions;
