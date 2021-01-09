@@ -3,6 +3,5 @@ node_js:
   - "node"
 install:
   - mkdir coverage
-  - npm install -g yarn
   - npm install -g codecov
-script: yarn && yarn test && codecov
+script: npm install && npm run test && codecov

@@ -1,6 +1,6 @@
 {
-  "name": "uselocalstorage",
-  "version": "0.0.1",
+  "name": "use-local-storage",
+  "version": "2.0.0",
   "description": "A flexible React Hook for using Local Storage.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,20 +19,21 @@
   "author": "Nick Scialli",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nas5w/uselocalstorage/issues"
+    "url": "https://github.com/nas5w/use-local-storage/issues"
   },
-  "homepage": "https://github.com/nas5w/uselocalstorage#readme",
+  "homepage": "https://github.com/nas5w/use-local-storage#readme",
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.8",
+    "@testing-library/react": "^11.2.3",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.20",
     "@types/react": "^17.0.0",
+    "@types/testing-library__jest-dom": "^5.9.5",
     "jest": "^26.6.3",
+    "jest-localstorage-mock": "^2.4.6",
+    "react-dom": "^17.0.1",
     "ts-jest": "^26.4.4",
     "typescript": "^4.1.3"
-  },
-  "jest": {
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
   },
   "dependencies": {
     "react": "^17.0.1"

@@ -1,4 +1,7 @@
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
+  setupFiles: ["jest-localstorage-mock"],
+  coverageDirectory: "./coverage/",
+  collectCoverage: true,
 };
