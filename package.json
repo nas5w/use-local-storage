@@ -1,5 +1,5 @@
 {
-  "name": "uselocalstorage",
+  "name": "use-local-storage",
   "version": "1.0.0",
   "description": "A flexible React Hook for using Local Storage.",
   "main": "dist/index.js",
