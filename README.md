@@ -132,6 +132,6 @@ const options = {
 const [data, setData] = useLocalStorage("data", { foo: "bar" }, options);
 ```
 
-# Logo Attribution
+# Attribution
 
-<div>Map icon in logo made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+<div>Storage icon in logo made by <a href="https://www.flaticon.com/authors/nhor-phai" title="Nhor Phai">Nhor Phai</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
