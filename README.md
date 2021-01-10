@@ -2,7 +2,7 @@
 
 A flexible React Hook for using Local Storage.
 
-[![Build Status](https://travis-ci.org/nas5w/use-local-storage.svg?branch=master)](https://travis-ci.org/nas5w/use-local-storage) [![Codecov Status](https://codecov.io/gh/nas5w/use-local-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/use-local-storage/branch/master)
+[![Build Status](https://travis-ci.org/nas5w/uselocalstorage.svg?branch=master)](https://travis-ci.org/nas5w/uselocalstorage) [![Codecov Status](https://codecov.io/gh/nas5w/uselocalstorage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/uselocalstorage/branch/master)
 
 <hr />
 
@@ -11,13 +11,13 @@ A flexible React Hook for using Local Storage.
 Install with npm
 
 ```bash
-npm i use-local-storage
+npm i uselocalstorage
 ```
 
 Install with yarn
 
 ```bash
-yarn add use-local-storage
+yarn add uselocalstorage
 ```
 
 # Basic Usage
@@ -27,7 +27,7 @@ In its most basic form, the `useLocalStorage` hook just needs the Local Storage 
 The following usage will persist the `username` variable in a `"name"` key in Local Storage. It will have a default/initial value of an empty string `""`. This default value witll _only_ be used if there is no value already in Local Storage.
 
 ```jsx
-import useLocalStorage from "use-local-storage";
+import useLocalStorage from "uselocalstorage";
 
 function MyComponent() {
   const [username, setUsername] = useLocalStorage("name", "");
@@ -54,7 +54,7 @@ The type of `username` will be inferred from your default value. In this case, t
 If you use `useLocalStorage` _without_ providing a default value, or you simply want to specify that `username` is actually of a different type, you should pass the type of your data as a generic:
 
 ```tsx
-import useLocalStorage from "use-local-storage";
+import useLocalStorage from "uselocalstorage";
 
 function MyComponent() {
   const [username, setUsername] = useLocalStorage<string>("name");
@@ -84,7 +84,7 @@ The `useLocalStorage` hook has a couple other features:
 The `useLocalStorage` hook returns a function as a third array element that lets you set a new `key` with an option (but recommended) second argument for the default value.
 
 ```jsx
-import useLocalStorage from "use-local-storage";
+import useLocalStorage from "uselocalstorage";
 
 function MyComponent() {
   const [data, setData, setKey] = useLocalStorage("name", "");
