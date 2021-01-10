@@ -19,9 +19,9 @@
   "author": "Nick Scialli",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nas5w/uselocalstorage/issues"
+    "url": "https://github.com/nas5w/use-local-storage/issues"
   },
-  "homepage": "https://github.com/nas5w/uselocalstorage#readme",
+  "homepage": "https://github.com/nas5w/use-local-storage#readme",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.8",
     "@testing-library/react": "^11.2.3",
