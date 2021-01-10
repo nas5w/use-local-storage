@@ -1,4 +1,4 @@
-![useLocalStorage React hook](./logo.png)
+![useLocalStorage React hook](./uls-logo.png)
 
 A flexible React Hook for using Local Storage.
 
