@@ -1,8 +1,8 @@
-![useLocalStorage React hook](./uls-logo.png)
+![useLocalStorage React hook](https://raw.githubusercontent.com/nas5w/use-local-storage/master/uls-logo.png)
 
 A flexible React Hook for using Local Storage.
 
-[![Build Status](https://travis-ci.org/nas5w/uselocalstorage.svg?branch=master)](https://travis-ci.org/nas5w/uselocalstorage) [![Codecov Status](https://codecov.io/gh/nas5w/uselocalstorage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/uselocalstorage/branch/master)
+[![Build Status](https://travis-ci.org/nas5w/use-local-storage.svg?branch=master)](https://travis-ci.org/nas5w/use-local-storage) [![Codecov Status](https://codecov.io/gh/nas5w/use-local-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/use-local-storage/branch/master)
 
 <hr />
 
