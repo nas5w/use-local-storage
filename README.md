@@ -2,6 +2,8 @@
 
 A flexible React Hook for using Local Storage.
 
+[![Build Status](https://travis-ci.org/nas5w/uselocalstorage.svg?branch=master)](https://travis-ci.org/nas5w/uselocalstorage) [![Codecov Status](https://codecov.io/gh/nas5w/uselocalstorage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/uselocalstorage/branch/master)
+
 <hr />
 
 # Installation
