@@ -8,18 +8,20 @@ type Options<T> = Partial<{
   parser: Parser<T>;
 }>;
 
+type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
+
 type SetKey<T> = (key: string, value?: T) => void;
 
 function useLocalStorage<T>(
   key: string,
   defaultValue: T,
   options?: Options<T>
-): [T, (value: T) => void, SetKey<T>];
+): [T, Setter<T>, SetKey<T>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: undefined,
   options?: Options<T>
-): [T | undefined, (value: T | undefined) => void, SetKey<T>];
+): [T | undefined, Setter<T | undefined>, SetKey<T>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: T,
@@ -46,8 +48,11 @@ function useLocalStorage<T>(
 
   const { currentKey, currentValue } = keyValue;
 
-  const setValue = useCallback((value: T) => {
-    setKeyValue(({ currentKey }) => ({ currentKey, currentValue: value }));
+  const setValue = useCallback((value: Setter<T>) => {
+    setKeyValue(({ currentKey, currentValue }) => ({
+      currentKey,
+      currentValue: typeof value === "function" ? value(currentValue) : value,
+    }));
   }, []);
 
   const setKey: SetKey<T> = useCallback(

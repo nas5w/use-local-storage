@@ -17,6 +17,14 @@ function TestComponent() {
         Change Username
       </button>
       <button
+        id="set-data-callback"
+        onClick={() => {
+          setData((data) => data + "foo");
+        }}
+      >
+        Change Username
+      </button>
+      <button
         id="set-key"
         onClick={() => {
           setKey("password");
@@ -82,6 +90,13 @@ describe("useLocalStorage", () => {
     fireEvent.click(container.querySelector("#set-data")!);
     expect(container.querySelector("p")).toHaveTextContent("Burt");
     expect(localStorage.__STORE__.username).toBe(JSON.stringify("Burt"));
+  });
+  it("changes localstorage and state value using callback", () => {
+    localStorage.setItem("username", JSON.stringify("Daffodil"));
+    const { container } = render(<TestComponent />);
+    fireEvent.click(container.querySelector("#set-data-callback")!);
+    expect(container.querySelector("p")).toHaveTextContent("Daffodilfoo");
+    expect(localStorage.__STORE__.username).toBe(JSON.stringify("Daffodilfoo"));
   });
   it("changes key and uses default value", () => {
     const { container } = render(<TestComponent />);
