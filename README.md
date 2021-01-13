@@ -6,7 +6,7 @@ A flexible React Hook for using Local Storage.
 
 <hr />
 
-![useLocalStorage React hook demo](https://raw.githubusercontent.com/nas5w/use-local-storage/master/uls-logo.gif)
+![useLocalStorage React hook demo](https://raw.githubusercontent.com/nas5w/use-local-storage/master/uls-demo.gif)
 
 <hr />
 
