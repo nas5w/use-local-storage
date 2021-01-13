@@ -1,4 +1,4 @@
-![useLocalStorage React hook](https://raw.githubusercontent.com/nas5w/uselocalstorage/master/uls-logo.png)
+![useLocalStorage React hook](https://raw.githubusercontent.com/nas5w/use-local-storage/master/uls-logo.png)
 
 A flexible React Hook for using Local Storage.
 
