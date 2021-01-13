@@ -1,93 +1,61 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
+type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type Options<T> = Partial<{
   serializer: Serializer<T>;
   parser: Parser<T>;
+  logger: (error: any) => void;
 }>;
-
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
-
-type SetKey<T> = (key: string, value?: T) => void;
 
 function useLocalStorage<T>(
   key: string,
   defaultValue: T,
   options?: Options<T>
-): [T, Setter<T>, SetKey<T>];
+): [T, Setter<T>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: undefined,
   options?: Options<T>
-): [T | undefined, Setter<T | undefined>, SetKey<T>];
+): [T | undefined, Setter<T | undefined>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: T,
   options?: Options<T>
 ) {
-  const currentOptions = useMemo(() => {
+  const opts = useMemo(() => {
     return {
       serializer: JSON.stringify,
       parser: JSON.parse,
+      logger: console.log,
       ...options,
     };
   }, [options]);
 
-  const { serializer, parser } = currentOptions;
+  const { serializer, parser, logger } = opts;
 
-  const initial = useMemo(() => {
-    return getValueOrDefaultFromLocal(key, defaultValue, parser);
-  }, [key, defaultValue, parser]);
-
-  const [keyValue, setKeyValue] = useState({
-    currentKey: key,
-    currentValue: initial,
+  const [storedValue, setValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      const res: T = item ? parser(item) : defaultValue;
+      return res;
+    } catch (e) {
+      logger(e);
+      return defaultValue;
+    }
   });
 
-  const { currentKey, currentValue } = keyValue;
-
-  const setValue = useCallback((value: Setter<T>) => {
-    setKeyValue(({ currentKey, currentValue }) => ({
-      currentKey,
-      currentValue: typeof value === "function" ? value(currentValue) : value,
-    }));
-  }, []);
-
-  const setKey: SetKey<T> = useCallback(
-    (key, newDefaultValue) => {
-      const value = getValueOrDefaultFromLocal(
-        key,
-        newDefaultValue ?? defaultValue,
-        parser
-      );
-      setKeyValue({ currentValue: value, currentKey: key });
-    },
-    [parser, defaultValue]
-  );
-
   useEffect(() => {
-    localStorage.setItem(currentKey, serializer(currentValue));
-  }, [currentKey, currentValue, serializer]);
+    try {
+      window.localStorage.setItem(key, serializer(storedValue));
+    } catch (e) {
+      logger(e);
+    }
+  }, [storedValue]);
 
-  return [currentValue, setValue, setKey] as const;
-}
-
-function getValueOrDefaultFromLocal<T>(
-  key: string,
-  defaultValue: T,
-  parser: Parser<T>
-) {
-  const result = localStorage.getItem(key);
-  if (result === null) {
-    return defaultValue;
-  }
-  try {
-    return parser(result);
-  } catch (e) {
-    return undefined;
-  }
+  return [storedValue, setValue];
 }
 
 export default useLocalStorage;
