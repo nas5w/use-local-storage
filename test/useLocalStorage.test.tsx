@@ -60,6 +60,13 @@ function WithBadSerializer() {
   return <p>{data}</p>;
 }
 
+function WithDisabedSync() {
+  const [data] = useLocalStorage("username", "John Doe", {
+    syncData: false
+  });
+  return <p>{data}</p>;
+}
+
 describe("useLocalStorage", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -123,5 +130,45 @@ describe("useLocalStorage", () => {
   it("handles bad serializer", () => {
     const { container } = render(<WithBadSerializer />);
     expect(console.log).toBeCalled();
+  });
+  it('should sync data from other tab', function () {
+    const { container } = render(<TestComponent />);
+
+    fireEvent(window, new StorageEvent('storage', {
+      newValue: JSON.stringify("Test Sync"),
+      key: "username",
+      oldValue: null
+    }))
+    expect(container.querySelector("p")).toHaveTextContent("Test Sync");
+  });
+  it('should not sync data from other tab when sync disabled', function () {
+    const { container } = render(<WithDisabedSync />);
+
+    fireEvent(window, new StorageEvent('storage', {
+      newValue: JSON.stringify("Test Sync"),
+      key: "username",
+      oldValue: null
+    }))
+    expect(container.querySelector("p")).toHaveTextContent("John Doe");
+  });
+  it('should log on storage sync error', function () {
+    render(<TestComponent />);
+
+    fireEvent(window, new StorageEvent('storage', {
+      newValue: "malformed",
+      key: "username",
+      oldValue: null
+    }))
+    expect(console.log).toBeCalled();
+  });
+  it('should return undefined when other tab deletes storage item', function () {
+    const { container } = render(<TestComponent />);
+
+    fireEvent(window, new StorageEvent('storage', {
+      newValue: null,
+      key: "username",
+      oldValue: null
+    }))
+    expect(container.querySelector("p")).toHaveTextContent("");
   });
 });

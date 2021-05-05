@@ -8,6 +8,7 @@ type Options<T> = Partial<{
   serializer: Serializer<T>;
   parser: Parser<T>;
   logger: (error: any) => void;
+  syncData: boolean;
 }>;
 
 function useLocalStorage<T>(
@@ -30,11 +31,12 @@ function useLocalStorage<T>(
       serializer: JSON.stringify,
       parser: JSON.parse,
       logger: console.log,
+      syncData: true,
       ...options,
     };
   }, [options]);
 
-  const { serializer, parser, logger } = opts;
+  const { serializer, parser, logger, syncData } = opts;
 
   const [storedValue, setValue] = useState(() => {
     try {
@@ -54,6 +56,21 @@ function useLocalStorage<T>(
       logger(e);
     }
   }, [storedValue]);
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!syncData || e.key !== key) return;
+
+      try {
+        setValue(e.newValue ? parser(e.newValue) : undefined);
+      } catch (e) {
+        logger(e);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [key, syncData]);
 
   return [storedValue, setValue];
 }
