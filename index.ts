@@ -58,8 +58,10 @@ function useLocalStorage<T>(
   }, [storedValue]);
 
   useEffect(() => {
+    if (!syncData) return;
+
     const handleStorageChange = (e: StorageEvent) => {
-      if (!syncData || e.key !== key) return;
+      if (e.key !== key || e.storageArea !== window.localStorage) return;
 
       try {
         setValue(e.newValue ? parser(e.newValue) : undefined);

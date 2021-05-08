@@ -67,6 +67,15 @@ function WithDisabedSync() {
   return <p>{data}</p>;
 }
 
+function createStorageEventOption(key: string, newValue: string | null, storage?: Storage) {
+  return new StorageEvent("storage", {
+    newValue,
+    key,
+    oldValue: null,
+    storageArea: storage ?? window.localStorage
+  });
+}
+
 describe("useLocalStorage", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -85,10 +94,7 @@ describe("useLocalStorage", () => {
   });
   it("sets localStorage based on default value", () => {
     const { container } = render(<TestComponent />);
-    expect(localStorage.setItem).toHaveBeenLastCalledWith(
-      "username",
-      JSON.stringify("John Doe")
-    );
+    expect(localStorage.getItem("username")).toEqual(JSON.stringify("John Doe"));
     expect(container.querySelector("p")).toHaveTextContent("John Doe");
   });
   it("gets localStorage value instead of default", () => {
@@ -101,14 +107,14 @@ describe("useLocalStorage", () => {
     const { container } = render(<TestComponent />);
     fireEvent.click(container.querySelector("#set-data")!);
     expect(container.querySelector("p")).toHaveTextContent("Burt");
-    expect(localStorage.__STORE__.username).toBe(JSON.stringify("Burt"));
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
   });
   it("changes localstorage and state value using callback", () => {
     localStorage.setItem("username", JSON.stringify("Daffodil"));
     const { container } = render(<TestComponent />);
     fireEvent.click(container.querySelector("#set-data-callback")!);
     expect(container.querySelector("p")).toHaveTextContent("Daffodilfoo");
-    expect(localStorage.__STORE__.username).toBe(JSON.stringify("Daffodilfoo"));
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("Daffodilfoo"));
   });
   it("uses a custom parser", () => {
     localStorage.setItem("username", JSON.stringify("johndoe85"));
@@ -117,9 +123,7 @@ describe("useLocalStorage", () => {
   });
   it("uses a custom serializer", () => {
     render(<WithCustomSerializer />);
-    expect(localStorage.__STORE__.username).toBe(
-      JSON.stringify("John Doechar")
-    );
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("John Doechar"));
   });
   it("handles malformed local storage data", () => {
     localStorage.setItem("username", JSON.stringify("some data"));
@@ -134,41 +138,37 @@ describe("useLocalStorage", () => {
   it('should sync data from other tab', function () {
     const { container } = render(<TestComponent />);
 
-    fireEvent(window, new StorageEvent('storage', {
-      newValue: JSON.stringify("Test Sync"),
-      key: "username",
-      oldValue: null
-    }))
+    fireEvent(window, createStorageEventOption("username", JSON.stringify("Test Sync")))
     expect(container.querySelector("p")).toHaveTextContent("Test Sync");
   });
   it('should not sync data from other tab when sync disabled', function () {
     const { container } = render(<WithDisabedSync />);
 
-    fireEvent(window, new StorageEvent('storage', {
-      newValue: JSON.stringify("Test Sync"),
-      key: "username",
-      oldValue: null
-    }))
+    fireEvent(window, createStorageEventOption("username", JSON.stringify("Test Sync")))
+    expect(container.querySelector("p")).toHaveTextContent("John Doe");
+  });
+  it('should not sync data from other tab when key is different', function () {
+    const { container } = render(<TestComponent />);
+
+    fireEvent(window, createStorageEventOption("otherkey", JSON.stringify("Test Sync")))
+    expect(container.querySelector("p")).toHaveTextContent("John Doe");
+  });
+  it('should not sync data from other tab when event is from other storage', function () {
+    const { container } = render(<TestComponent />);
+
+    fireEvent(window, createStorageEventOption("username", JSON.stringify("Test Sync"), window.sessionStorage))
     expect(container.querySelector("p")).toHaveTextContent("John Doe");
   });
   it('should log on storage sync error', function () {
     render(<TestComponent />);
 
-    fireEvent(window, new StorageEvent('storage', {
-      newValue: "malformed",
-      key: "username",
-      oldValue: null
-    }))
+    fireEvent(window, createStorageEventOption("username", "malformed"))
     expect(console.log).toBeCalled();
   });
   it('should return undefined when other tab deletes storage item', function () {
     const { container } = render(<TestComponent />);
 
-    fireEvent(window, new StorageEvent('storage', {
-      newValue: null,
-      key: "username",
-      oldValue: null
-    }))
+    fireEvent(window, createStorageEventOption("username", null))
     expect(container.querySelector("p")).toHaveTextContent("");
   });
 });
