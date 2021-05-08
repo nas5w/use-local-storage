@@ -78,7 +78,7 @@ function MyComponent() {
 
 # Advanced Usage / Options
 
-the `useLocalStorage` hook takes an optional third `options` argument. This allows you to configure a custom serializer and/or parser if you need to use something other than `JSON.stringify` and `JSON.parse`. The `options` object also has a `logger` key to log an errors caught in the hook.
+the `useLocalStorage` hook takes an optional third `options` argument. This allows you to configure a custom serializer and/or parser if you need to use something other than `JSON.stringify` and `JSON.parse`. The `options` object also has a `logger` key to log an errors caught in the hook. You can also disable the cross-context synchronization by setting `syncData` to false.
 
 ```javascript
 const options = {
@@ -93,6 +93,7 @@ const options = {
   logger: (error) => {
     // Do some logging
   },
+  syncData: false // You can disable cross context sync
 };
 
 const [data, setData] = useLocalStorage("data", { foo: "bar" }, options);
