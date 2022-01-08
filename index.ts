@@ -39,6 +39,8 @@ function useLocalStorage<T>(
   const { serializer, parser, logger, syncData } = opts;
 
   const [storedValue, setValue] = useState(() => {
+    if (typeof window === "undefined") return defaultValue;
+
     try {
       const item = window.localStorage.getItem(key);
       const res: T = item ? parser(item) : defaultValue;
@@ -50,6 +52,8 @@ function useLocalStorage<T>(
   });
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     try {
       window.localStorage.setItem(key, serializer(storedValue));
     } catch (e) {
@@ -70,7 +74,9 @@ function useLocalStorage<T>(
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    if (typeof window === "undefined") return;
+
+    window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, syncData]);
 
