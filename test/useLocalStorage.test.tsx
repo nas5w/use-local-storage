@@ -4,7 +4,7 @@ import "@testing-library/jest-dom/extend-expect";
 import useLocalStorage from "../index";
 
 export function TestComponent() {
-  const [data, setData] = useLocalStorage("username", "John Doe");
+  const [data, setData, removeData] = useLocalStorage("username", "John Doe");
   return (
     <>
       <p>{data}</p>
@@ -23,6 +23,13 @@ export function TestComponent() {
         }}
       >
         Change Username
+      </button>
+      <button
+        id="remove-data"
+        onClick={() => {
+          removeData();
+        }}
+      > Remove Username
       </button>
     </>
   );
@@ -196,5 +203,27 @@ describe("useLocalStorage", () => {
 
     fireEvent(window, createStorageEventOption("username", null));
     expect(container.querySelector("p")).toHaveTextContent("");
+  });
+  it("should remove item from localStorage when removeData is called", function () {
+    const { container } = render(<TestComponent />);
+    fireEvent.click(container.querySelector("#remove-data")!);
+    expect(container.querySelector("p")).toHaveTextContent("");
+    expect(localStorage.getItem("username")).toBe(null);
+  });
+  it("should be able set correct value again after removeData is called", function() {
+    const { container } = render(<TestComponent />);
+    fireEvent.click(container.querySelector("#remove-data")!);
+    fireEvent.click(container.querySelector("#set-data")!);
+    fireEvent.click(container.querySelector("#set-data-callback")!);
+    expect(localStorage.getItem("username")).toBe(JSON.stringify('Burtfoo'));
+    expect(container.querySelector("p")).toHaveTextContent('Burtfoo');
+  });
+  it("should log in case localStorage.removeItem throws error", () => {
+    const { container } = render(<TestComponent />);
+    const removeItemSpy = jest.spyOn(Storage.prototype, "removeItem");
+    removeItemSpy.mockImplementation(() => { throw Error("error") })
+    fireEvent.click(container.querySelector("#remove-data")!);
+    expect(console.log).toBeCalled();
+    removeItemSpy.mockRestore();
   });
 });
