@@ -4,7 +4,6 @@ type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
 type SetterEntity<T> = React.SetStateAction<T>;
 type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
-type Remover = () => void;
 
 type Options<T> = Partial<{
   serializer: Serializer<T>;
@@ -17,12 +16,12 @@ function useLocalStorage<T>(
   key: string,
   defaultValue: T,
   options?: Options<T>
-): [T, Setter<T>, Remover];
+): [T, Setter<T>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: undefined,
   options?: Options<T>
-): [T | undefined, Setter<T | undefined>, Remover];
+): [T | undefined, Setter<T | undefined>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: T,
@@ -68,17 +67,6 @@ function useLocalStorage<T>(
     }
   }, [key, logger, storedValue, setValue]);
 
-  const unsetValueInLocalStorage = useCallback(() => {
-    if (typeof window === "undefined") return;
-
-    try {
-      window.localStorage.removeItem(key);
-      setValue(undefined);
-    } catch (e) {
-      logger(e);
-    }
-  }, [key, logger, setValue]);
-
   useEffect(() => {
     setValueInLocalStorage(storedValue);
   }, []);
@@ -102,7 +90,7 @@ function useLocalStorage<T>(
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, syncData]);
 
-  return [storedValue, setValueInLocalStorage, unsetValueInLocalStorage];
+  return [storedValue, setValueInLocalStorage];
 }
 
 export default useLocalStorage;
