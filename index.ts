@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
+type SetterEntity<T> = React.SetStateAction<T>;
+type Setter<T> = React.Dispatch<SetterEntity<T>>;
+type Remover = () => void;
 
 type Options<T> = Partial<{
   serializer: Serializer<T>;
@@ -15,12 +17,12 @@ function useLocalStorage<T>(
   key: string,
   defaultValue: T,
   options?: Options<T>
-): [T, Setter<T>];
+): [T, Setter<T>, Remover];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: undefined,
   options?: Options<T>
-): [T | undefined, Setter<T | undefined>];
+): [T | undefined, Setter<T | undefined>, Remover];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: T,
@@ -38,6 +40,7 @@ function useLocalStorage<T>(
 
   const { serializer, parser, logger, syncData } = opts;
 
+  const [shouldDelete, setShouldDelete] = useState(false);
   const [storedValue, setValue] = useState(() => {
     if (typeof window === "undefined") return defaultValue;
 
@@ -51,15 +54,34 @@ function useLocalStorage<T>(
     }
   });
 
+  const setValueInLocalStorage = useCallback((setter: SetterEntity<T | undefined>) => {
+    setShouldDelete(false);
+    setValue(setter);
+  }, [setValue, setShouldDelete]);
+
+  const unsetValueInLocalStorage = useCallback(() => {
+    setShouldDelete(true);
+    setValue(undefined);
+  }, [setValue, setShouldDelete]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    const updateLocalStorage = () => {
+      if (!shouldDelete) {
+        window.localStorage.setItem(key, serializer(storedValue));
+      } else {
+        window.localStorage.removeItem(key);
+      }
+    }
+
     try {
-      window.localStorage.setItem(key, serializer(storedValue));
+      updateLocalStorage();
     } catch (e) {
       logger(e);
     }
-  }, [storedValue]);
+
+  }, [shouldDelete, storedValue]);
 
   useEffect(() => {
     if (!syncData) return;
@@ -80,7 +102,7 @@ function useLocalStorage<T>(
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, syncData]);
 
-  return [storedValue, setValue];
+  return [storedValue, setValueInLocalStorage, unsetValueInLocalStorage];
 }
 
 export default useLocalStorage;
