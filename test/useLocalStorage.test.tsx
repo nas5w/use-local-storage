@@ -25,6 +25,17 @@ export function TestComponent() {
         Change Username
       </button>
       <button
+        id="set-data-callback-multiple"
+        onClick={() => {
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+        }}
+      >
+        Change Username
+      </button>
+      <button
         id="remove-data"
         onClick={() => {
           removeData();
@@ -203,6 +214,11 @@ describe("useLocalStorage", () => {
 
     fireEvent(window, createStorageEventOption("username", null));
     expect(container.querySelector("p")).toHaveTextContent("");
+  });
+  it("should be able to set value correctly with multiple callback", () => {
+    const { container } = render(<TestComponent />);
+    fireEvent.click(container.querySelector("#set-data-callback-multiple")!);
+    expect(container.querySelector("p")).toHaveTextContent("John Doebarbarbar");
   });
   it("should remove item from localStorage when removeData is called", function () {
     const { container } = render(<TestComponent />);
