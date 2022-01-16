@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
-type SetterEntity<T> = React.SetStateAction<T>;
 type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 type Options<T> = Partial<{
@@ -52,24 +51,15 @@ function useLocalStorage<T>(
     }
   });
 
-  const setValueInLocalStorage = useCallback((setterEntity: SetterEntity<T | undefined>) => {
+  useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const isFunction = !!setterEntity && typeof setterEntity === "function";
-    // @ts-ignore
-    const newValue = isFunction ? setterEntity(storedValue) : setterEntity;
-
     try {
-      window.localStorage.setItem(key, serializer(newValue));
-      setValue(setterEntity);
+      window.localStorage.setItem(key, serializer(storedValue));
     } catch (e) {
       logger(e);
     }
-  }, [key, logger, storedValue, setValue]);
-
-  useEffect(() => {
-    setValueInLocalStorage(storedValue);
-  }, []);
+  }, [storedValue]);
 
   useEffect(() => {
     if (!syncData) return;
@@ -90,7 +80,7 @@ function useLocalStorage<T>(
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, syncData]);
 
-  return [storedValue, setValueInLocalStorage];
+  return [storedValue, setValue];
 }
 
 export default useLocalStorage;
