@@ -24,6 +24,14 @@ export function TestComponent() {
       >
         Change Username
       </button>
+      <button
+        id="remove-data"
+        onClick={() => {
+          setData(undefined);
+        }}
+      >
+        Remove Username
+      </button>
     </>
   );
 }
@@ -65,6 +73,27 @@ function WithDisabedSync() {
     syncData: false,
   });
   return <p>{data}</p>;
+}
+
+function WithMultipleSetterCallback() {
+  const [data, setData] = useLocalStorage("username", "foo");
+  
+  return (
+    <>
+      <p>{data}</p>
+      <button 
+        id="set-data-multiple-callback"
+        onClick={() => {
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+          setData((data) => data + "bar");
+      }}
+    >
+      Change Username
+      </button>
+    </>
+  );
 }
 
 function createStorageEventOption(
@@ -122,6 +151,14 @@ describe("useLocalStorage", () => {
     expect(container.querySelector("p")).toHaveTextContent("Daffodilfoo");
     expect(localStorage.getItem("username")).toBe(
       JSON.stringify("Daffodilfoo")
+    );
+  });
+  it("changes localStorage and state value correctly for multiple setter callbacks", () => {
+    const { container } = render(<WithMultipleSetterCallback />);
+    fireEvent.click(container.querySelector("#set-data-multiple-callback")!);
+    expect(container.querySelector('p')).toHaveTextContent("foobarbarbarbar");
+    expect(localStorage.getItem("username")).toBe(
+      JSON.stringify("foobarbarbarbar")
     );
   });
   it("uses a custom parser", () => {
@@ -196,5 +233,21 @@ describe("useLocalStorage", () => {
 
     fireEvent(window, createStorageEventOption("username", null));
     expect(container.querySelector("p")).toHaveTextContent("");
+  });
+  it("should remove item from localStorage when value is set as undefined", () => {
+    const { container } = render(<TestComponent />);
+
+    fireEvent.click(container.querySelector("#remove-data")!);
+    expect(container.querySelector("p")).toHaveTextContent("");
+    expect(localStorage.getItem("username")).toBe(null);
+  });
+  it("should be able to set value again after it was removed from localStorage", () => {
+    const { container } = render(<TestComponent />);
+
+    fireEvent.click(container.querySelector("#remove-data")!);
+    fireEvent.click(container.querySelector("#set-data")!);
+    expect(localStorage.getItem("username")).toBe(
+      JSON.stringify("Burt")
+    );
   });
 });

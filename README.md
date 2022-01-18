@@ -28,7 +28,7 @@ yarn add use-local-storage
 
 In its most basic form, the `useLocalStorage` hook just needs the Local Storage `key` you wish to use. However, it's advised that you also provde a default value as a second argument in the event that they `key` does not yet exist in Local Storage.
 
-The following usage will persist the `username` variable in a `"name"` key in Local Storage. It will have a default/initial value of an empty string `""`. This default value witll _only_ be used if there is no value already in Local Storage.
+The following usage will persist the `username` variable in a `"name"` key in Local Storage. It will have a default/initial value of an empty string `""`. This default value will _only_ be used if there is no value already in Local Storage, moreover setting the variable `username` to `undefined` will remove it from Local Storage.
 
 ```jsx
 import useLocalStorage from "use-local-storage";
@@ -44,6 +44,13 @@ function MyComponent() {
           setUsername(e.target.value);
         }}
       />
+      <button
+        onClick={() => {
+          setUsername(undefined);
+        }}
+      >
+        Remove Username
+      </button>
     </>
   );
 }
@@ -71,6 +78,13 @@ function MyComponent() {
           setUsername(e.target.value);
         }}
       />
+      <button
+        onClick={() => {
+          setUsername(undefined);
+        }}
+      >
+        Remove Username
+      </button>
     </>
   );
 }

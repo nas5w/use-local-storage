@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
-type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
+type Setter<T> = React.Dispatch<React.SetStateAction<T | undefined>>;
 
 type Options<T> = Partial<{
   serializer: Serializer<T>;
@@ -16,11 +16,6 @@ function useLocalStorage<T>(
   defaultValue: T,
   options?: Options<T>
 ): [T, Setter<T>];
-function useLocalStorage<T>(
-  key: string,
-  defaultValue?: undefined,
-  options?: Options<T>
-): [T | undefined, Setter<T | undefined>];
 function useLocalStorage<T>(
   key: string,
   defaultValue?: T,
@@ -54,8 +49,16 @@ function useLocalStorage<T>(
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    const updateLocalStorage = () => {
+      if (storedValue !== undefined) {
+        window.localStorage.setItem(key, serializer(storedValue));
+      } else {
+        window.localStorage.removeItem(key);
+      }
+    }
+
     try {
-      window.localStorage.setItem(key, serializer(storedValue));
+      updateLocalStorage();
     } catch (e) {
       logger(e);
     }
