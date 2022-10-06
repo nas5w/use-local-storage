@@ -82,7 +82,7 @@ function useLocalStorage<T>(
       if (e.key !== key || e.storageArea !== window.localStorage) return;
 
       try {
-        setValue(getValue(key, defaultValue));
+setValue(e.newValue ? parser(e.newValue) : undefined);
       } catch (e) {
         logger(e);
       }
