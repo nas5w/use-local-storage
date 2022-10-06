@@ -92,7 +92,7 @@ function useLocalStorage<T>(
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [getValue, key, defaultValue, logger, syncData]);
+  }, [key, defaultValue, parser, logger, syncData]);
 
   return [storedValue, setValue];
 }
