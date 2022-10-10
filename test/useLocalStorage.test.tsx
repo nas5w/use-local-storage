@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 import useLocalStorage from "../index";
@@ -77,20 +77,20 @@ function WithDisabedSync() {
 
 function WithMultipleSetterCallback() {
   const [data, setData] = useLocalStorage("username", "foo");
-  
+
   return (
     <>
       <p>{data}</p>
-      <button 
+      <button
         id="set-data-multiple-callback"
         onClick={() => {
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
-      }}
-    >
-      Change Username
+        }}
+      >
+        Change Username
       </button>
     </>
   );
@@ -156,7 +156,7 @@ describe("useLocalStorage", () => {
   it("changes localStorage and state value correctly for multiple setter callbacks", () => {
     const { container } = render(<WithMultipleSetterCallback />);
     fireEvent.click(container.querySelector("#set-data-multiple-callback")!);
-    expect(container.querySelector('p')).toHaveTextContent("foobarbarbarbar");
+    expect(container.querySelector("p")).toHaveTextContent("foobarbarbarbar");
     expect(localStorage.getItem("username")).toBe(
       JSON.stringify("foobarbarbarbar")
     );
@@ -182,6 +182,34 @@ describe("useLocalStorage", () => {
     const { container } = render(<WithBadSerializer />);
     expect(console.log).toBeCalled();
   });
+
+  it("handles a change of keys", () => {
+    let i = 0;
+    // Force that each render, the key and value are different
+    function WithIncreasingKey() {
+      i++;
+      const [data] = useLocalStorage("key-" + i, "value-" + i);
+      const [, update] = useState({});
+      return (
+        <div>
+          <div id="set-data" onClick={(e) => update({})}></div>
+          <p>{data}</p>
+        </div>
+      );
+    }
+    const { container } = render(<WithIncreasingKey />);
+    expect(Object.entries(localStorage)).toEqual([["key-1", '"value-1"']]);
+    expect(container.querySelector("p")).toHaveTextContent("value-1");
+
+    // Second iteration, expected the key to be `key-2` and the value `value-2`
+    fireEvent.click(container.querySelector("#set-data")!);
+    expect(Object.entries(localStorage)).toEqual([
+      ["key-1", '"value-1"'],
+      ["key-2", '"value-2"'],
+    ]);
+    expect(container.querySelector("p")).toHaveTextContent("value-2");
+  });
+
   it("should sync data from other tab", function () {
     const { container } = render(<TestComponent />);
 
@@ -246,8 +274,6 @@ describe("useLocalStorage", () => {
 
     fireEvent.click(container.querySelector("#remove-data")!);
     fireEvent.click(container.querySelector("#set-data")!);
-    expect(localStorage.getItem("username")).toBe(
-      JSON.stringify("Burt")
-    );
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
   });
 });
