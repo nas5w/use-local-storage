@@ -50,12 +50,17 @@ function useLocalStorage<T>(
     if (typeof window === "undefined") return;
 
     const updateLocalStorage = () => {
+      // Browser ONLY dispatch storage events to other tabs, NOT current tab.
+      // We need to manually dispatch storage event for current tab
       if (storedValue !== undefined) {
-        window.localStorage.setItem(key, serializer(storedValue));
+        const newValue = serializer(storedValue);
+        window.localStorage.setItem(key, newValue);
+        window.dispatchEvent(new StorageEvent("storage", { key, newValue }));
       } else {
         window.localStorage.removeItem(key);
+        window.dispatchEvent(new StorageEvent("storage", { key }));
       }
-    }
+    };
 
     try {
       updateLocalStorage();
