@@ -55,10 +55,23 @@ function useLocalStorage<T>(
       if (storedValue !== undefined) {
         const newValue = serializer(storedValue);
         window.localStorage.setItem(key, newValue);
-        window.dispatchEvent(new StorageEvent("storage", { key, newValue }));
+        window.dispatchEvent(
+          new StorageEvent("storage", {
+            storageArea: window.localStorage,
+            url: window.location.href,
+            key,
+            newValue,
+          })
+        );
       } else {
         window.localStorage.removeItem(key);
-        window.dispatchEvent(new StorageEvent("storage", { key }));
+        window.dispatchEvent(
+          new StorageEvent("storage", {
+            storageArea: window.localStorage,
+            url: window.location.href,
+            key,
+          })
+        );
       }
     };
 
