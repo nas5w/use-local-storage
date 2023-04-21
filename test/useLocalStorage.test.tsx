@@ -77,20 +77,20 @@ function WithDisabedSync() {
 
 function WithMultipleSetterCallback() {
   const [data, setData] = useLocalStorage("username", "foo");
-  
+
   return (
     <>
       <p>{data}</p>
-      <button 
+      <button
         id="set-data-multiple-callback"
         onClick={() => {
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
-      }}
-    >
-      Change Username
+        }}
+      >
+        Change Username
       </button>
     </>
   );
@@ -107,6 +107,19 @@ function createStorageEventOption(
     oldValue: null,
     storageArea: storage ?? window.localStorage,
   });
+}
+
+function CountRenders({ counter }: { counter: { value: number } }) {
+  const [data, setData] = useLocalStorage("username", "foo");
+  counter.value++;
+  return (
+    <>
+      <p>{data}</p>
+      <button id="stability" onClick={() => setData((data) => data + "bar")}>
+        Change Username
+      </button>
+    </>
+  );
 }
 
 describe("useLocalStorage", () => {
@@ -156,7 +169,7 @@ describe("useLocalStorage", () => {
   it("changes localStorage and state value correctly for multiple setter callbacks", () => {
     const { container } = render(<WithMultipleSetterCallback />);
     fireEvent.click(container.querySelector("#set-data-multiple-callback")!);
-    expect(container.querySelector('p')).toHaveTextContent("foobarbarbarbar");
+    expect(container.querySelector("p")).toHaveTextContent("foobarbarbarbar");
     expect(localStorage.getItem("username")).toBe(
       JSON.stringify("foobarbarbarbar")
     );
@@ -246,8 +259,15 @@ describe("useLocalStorage", () => {
 
     fireEvent.click(container.querySelector("#remove-data")!);
     fireEvent.click(container.querySelector("#set-data")!);
-    expect(localStorage.getItem("username")).toBe(
-      JSON.stringify("Burt")
-    );
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
+  });
+  it("triggers a re-render only the needed amount of times", () => {
+    const counter = { value: 0 };
+    expect(counter.value).toBe(0);
+    const { container } = render(<CountRenders counter={counter} />);
+    expect(counter.value).toBe(1);
+    fireEvent.click(container.querySelector("#stability")!);
+    expect(counter.value).toBe(2);
+    expect(localStorage.getItem("username")).toEqual(JSON.stringify("foobar"));
   });
 });

@@ -55,7 +55,7 @@ function useLocalStorage<T>(
       } else {
         window.localStorage.removeItem(key);
       }
-    }
+    };
 
     try {
       updateLocalStorage();
@@ -71,6 +71,8 @@ function useLocalStorage<T>(
       if (e.key !== key || e.storageArea !== window.localStorage) return;
 
       try {
+        // When the new value is the same as the old one, don't trigger an update
+        if (e.newValue === serializer(storedValue)) return;
         setValue(e.newValue ? parser(e.newValue) : undefined);
       } catch (e) {
         logger(e);
@@ -81,7 +83,7 @@ function useLocalStorage<T>(
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [key, syncData]);
+  }, [key, syncData, storedValue]);
 
   return [storedValue, setValue];
 }
