@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { renderHook } from "@testing-library/react-hooks/server";
-import useLocalStorage from "..";
+import useLocalStorage from "../src/index";
 
 describe("ssr", () => {
   it("doesn't fail without the window object", () => {

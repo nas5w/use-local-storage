@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import useLocalStorage from "../index";
+import useLocalStorage from "../src/index";
 
 export function TestComponent() {
   const [data, setData] = useLocalStorage("username", "John Doe");
@@ -77,20 +77,20 @@ function WithDisabedSync() {
 
 function WithMultipleSetterCallback() {
   const [data, setData] = useLocalStorage("username", "foo");
-  
+
   return (
     <>
       <p>{data}</p>
-      <button 
+      <button
         id="set-data-multiple-callback"
         onClick={() => {
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
           setData((data) => data + "bar");
-      }}
-    >
-      Change Username
+        }}
+      >
+        Change Username
       </button>
     </>
   );
@@ -156,7 +156,7 @@ describe("useLocalStorage", () => {
   it("changes localStorage and state value correctly for multiple setter callbacks", () => {
     const { container } = render(<WithMultipleSetterCallback />);
     fireEvent.click(container.querySelector("#set-data-multiple-callback")!);
-    expect(container.querySelector('p')).toHaveTextContent("foobarbarbarbar");
+    expect(container.querySelector("p")).toHaveTextContent("foobarbarbarbar");
     expect(localStorage.getItem("username")).toBe(
       JSON.stringify("foobarbarbarbar")
     );
@@ -246,8 +246,6 @@ describe("useLocalStorage", () => {
 
     fireEvent.click(container.querySelector("#remove-data")!);
     fireEvent.click(container.querySelector("#set-data")!);
-    expect(localStorage.getItem("username")).toBe(
-      JSON.stringify("Burt")
-    );
+    expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
   });
 });
