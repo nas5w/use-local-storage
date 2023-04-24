@@ -2,7 +2,7 @@
 
 A flexible React Hook for using Local Storage.
 
-[![Build Status](https://travis-ci.org/nas5w/use-local-storage.svg?branch=master)](https://travis-ci.org/nas5w/use-local-storage) [![Codecov Status](https://codecov.io/gh/nas5w/use-local-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/use-local-storage/branch/master)
+![Test Status](https://github.com/nas5w/use-local-storage/actions/workflows/test.yml/badge.svg) [![Codecov Status](https://codecov.io/gh/nas5w/use-local-storage/branch/master/graph/badge.svg)](https://codecov.io/gh/nas5w/use-local-storage/branch/master)
 
 <hr />
 
@@ -107,7 +107,7 @@ const options = {
   logger: (error) => {
     // Do some logging
   },
-  syncData: false // You can disable cross context sync
+  syncData: false, // You can disable cross context sync
 };
 
 const [data, setData] = useLocalStorage("data", { foo: "bar" }, options);
