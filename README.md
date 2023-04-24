@@ -10,6 +10,16 @@ A flexible React Hook for using Local Storage.
 
 <hr />
 
+# Features
+
+✅ Persists data to local storage with an interface similar to the React `useState` hook
+
+✅ Works with any hooks-compatible React version
+
+✅ Works with SSR
+
+✅ Syncs data between components in the same or different browser tabs
+
 # Installation
 
 Install with npm
