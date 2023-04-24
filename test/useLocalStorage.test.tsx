@@ -261,9 +261,6 @@ describe("useLocalStorage", () => {
     fireEvent.click(container.querySelector("#set-data")!);
     expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
   });
-      expect(localStorage.getItem("username")).toBe(JSON.stringify("Burt"));
-      JSON.stringify("Burt")
-  });
   it("triggers a re-render only the needed amount of times", () => {
     const counter = { value: 0 };
     expect(counter.value).toBe(0);
