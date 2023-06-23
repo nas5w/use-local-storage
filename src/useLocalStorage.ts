@@ -1,26 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
 
-type Serializer<T> = (object: T | undefined) => string;
-type Parser<T> = (val: string) => T | undefined;
-type Setter<T> = React.Dispatch<React.SetStateAction<T | undefined>>;
+export type Serializer<T> = (object: T | undefined) => string;
+export type Parser<T> = (val: string) => T | undefined;
 
-type Options<T> = Partial<{
+export type Options<T> = Partial<{
   serializer: Serializer<T>;
   parser: Parser<T>;
   logger: (error: any) => void;
   syncData: boolean;
 }>;
 
-function useLocalStorage<T>(
+export default function useLocalStorage<T>(
   key: string,
   defaultValue: T,
   options?: Options<T>
-): [T, Setter<T>];
-function useLocalStorage<T>(
-  key: string,
-  defaultValue?: T,
-  options?: Options<T>
-) {
+): [T, Dispatch<SetStateAction<T>>] {
   const opts = useMemo(() => {
     return {
       serializer: JSON.stringify,
@@ -35,14 +29,12 @@ function useLocalStorage<T>(
 
   const rawValueRef = useRef<string | null>(null);
 
-  const [value, setValue] = useState(() => {
-    if (typeof window === "undefined") return defaultValue;
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === 'undefined') return defaultValue;
 
     try {
       rawValueRef.current = window.localStorage.getItem(key);
-      const res: T = rawValueRef.current
-        ? parser(rawValueRef.current)
-        : defaultValue;
+      const res: T = rawValueRef.current ? parser(rawValueRef.current) : defaultValue;
       return res;
     } catch (e) {
       logger(e);
@@ -51,7 +43,7 @@ function useLocalStorage<T>(
   });
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
     const updateLocalStorage = () => {
       // Browser ONLY dispatch storage events to other tabs, NOT current tab.
@@ -62,7 +54,7 @@ function useLocalStorage<T>(
         rawValueRef.current = newValue;
         window.localStorage.setItem(key, newValue);
         window.dispatchEvent(
-          new StorageEvent("storage", {
+          new StorageEvent('storage', {
             storageArea: window.localStorage,
             url: window.location.href,
             key,
@@ -73,7 +65,7 @@ function useLocalStorage<T>(
       } else {
         window.localStorage.removeItem(key);
         window.dispatchEvent(
-          new StorageEvent("storage", {
+          new StorageEvent('storage', {
             storageArea: window.localStorage,
             url: window.location.href,
             key,
@@ -105,13 +97,11 @@ function useLocalStorage<T>(
       }
     };
 
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [key, syncData]);
 
   return [value, setValue];
 }
-
-export default useLocalStorage;

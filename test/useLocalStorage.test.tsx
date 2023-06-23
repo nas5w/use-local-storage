@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react';
 import useLocalStorage from '../src';
 
 function TestComponent() {
-  const [data, setData] = useLocalStorage('username', 'John Doe');
+  const [data, setData] = useLocalStorage<string | undefined>('username', 'John Doe');
   return (
     <>
       <p>{data}</p>
