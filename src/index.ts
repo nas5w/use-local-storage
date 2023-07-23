@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 type Serializer<T> = (object: T | undefined) => string;
 type Parser<T> = (val: string) => T | undefined;
 type Setter<T> = React.Dispatch<React.SetStateAction<T | undefined>>;
+type DefaultValue<T> = T | (() => T)
 
 type Options<T> = Partial<{
   serializer: Serializer<T>;
@@ -13,12 +14,12 @@ type Options<T> = Partial<{
 
 function useLocalStorage<T>(
   key: string,
-  defaultValue: T,
+  defaultValue: DefaultValue<T>,
   options?: Options<T>
 ): [T, Setter<T>];
 function useLocalStorage<T>(
   key: string,
-  defaultValue?: T,
+  defaultValue?: DefaultValue<T>,
   options?: Options<T>
 ) {
   const opts = useMemo(() => {
@@ -36,17 +37,18 @@ function useLocalStorage<T>(
   const rawValueRef = useRef<string | null>(null);
 
   const [value, setValue] = useState(() => {
-    if (typeof window === "undefined") return defaultValue;
+    const newValue = defaultValue instanceof Function ? defaultValue() : defaultValue
+    if (typeof window === "undefined") return newValue;
 
     try {
       rawValueRef.current = window.localStorage.getItem(key);
       const res: T = rawValueRef.current
         ? parser(rawValueRef.current)
-        : defaultValue;
+        : newValue;
       return res;
     } catch (e) {
       logger(e);
-      return defaultValue;
+      return newValue;
     }
   });
 
