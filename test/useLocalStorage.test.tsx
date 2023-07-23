@@ -36,6 +36,11 @@ export function TestComponent() {
   );
 }
 
+function WithLazyInitialState({ text }: { text: string }) {
+  const [data] = useLocalStorage("username", () => text);
+  return <p>{data}</p>;
+}
+
 function WithCustomParser() {
   const [data] = useLocalStorage("username", "John Doe", {
     parser: (val) => JSON.parse(val) + "kraw",
@@ -173,6 +178,10 @@ describe("useLocalStorage", () => {
     expect(localStorage.getItem("username")).toBe(
       JSON.stringify("foobarbarbarbar")
     );
+  });
+  it("uses a lazy initial state", () => {
+    const { container } = render(<WithLazyInitialState text="johndoe85kraw" />);
+    expect(container.querySelector("p")).toHaveTextContent("johndoe85kraw");
   });
   it("uses a custom parser", () => {
     localStorage.setItem("username", JSON.stringify("johndoe85"));
